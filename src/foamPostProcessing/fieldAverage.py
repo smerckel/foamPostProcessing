@@ -5,7 +5,8 @@ import glob
 
 CACHE = {}
 
-FIELD_TYPES=dict(U='vector', T='vector', phi='scalar', p='scalar')
+FIELD_TYPES=dict(U='vector', T='vector', phi='scalar', p='scalar', 
+                 nut='scalar', omega='scalar')
                 
 class InternalFieldAverage(object):
     BS = 8
@@ -15,11 +16,6 @@ class InternalFieldAverage(object):
         self.footer_text = []
         self.name = name
 
-    def clear_cache(self, name):
-        key = self.name
-        key_int = f"n_{self.name}"
-        CACHE.remove[key]
-        CACHE.remove[key_int]
         
     def read(self):
         with open(self.path, 'rb') as fp:
@@ -148,7 +144,7 @@ class CaseStructure(object):
             raise ValueError('We seem not to be called in a FOAM case.')
 
     def get_all_time_directories(self):
-        directories = glob.glob("[0-9]*[.0-9]*", root_dir='.')
+        directories = glob.glob("[0-9]*[.0-9]*")
         directories.sort(key=lambda x: float(x))
         return directories
 
@@ -161,13 +157,18 @@ class CaseStructure(object):
         return selected_directories
     
                 
+def clear_cache(name):
+    key = name
+    key_int = f"n_{name}"
+    CACHE.pop(key)
+    CACHE.pop(key_int)
                          
 def averageField(name, *, t_start=None, t_end=None):
     CS = CaseStructure()
     directories = CS.get_all_time_directories()
     directories = CS.filter_time(directories, t_start=t_start, t_end=t_end)
     for d in directories:
-        print(f"Processing {d}...")
+        print(f"Processing {d} for {name} ...")
         if FIELD_TYPES[name]=='vector':
             IFA = VectorInternalFieldAverage(name, d)
         else:

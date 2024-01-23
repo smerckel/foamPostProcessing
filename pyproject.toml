@@ -19,7 +19,7 @@ classifiers = [
 dependencies = [
 		"numpy"]
 
-dynamic = ["license", "version"]
+dynamic = ["version"]
 
 [project.urls]
 Homepage = "https://github.com/smerckel/foamPostprocessing"
